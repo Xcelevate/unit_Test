@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced JUnit and Mockito Training</title>
+    <style>
+        :root {
+            --font-family-display: Arial, sans-serif;
+            --font-weight-display: 600;
+            --font-family-content: Arial, sans-serif;
+            --font-weight-content: 400;
+            --font-size-content: 16px;
+            --line-height-content: 1.4;
+        }
+
+        body.theme-light {
+            --color-bg-base: #ffffff;
+            --color-bg-elevated: #f8fafc;
+            --color-bg-surface: #f1f5f9;
+            --color-bg-muted: #e2e8f0;
+            --color-text-primary: #0f172a;
+            --color-text-secondary: #475569;
+            --color-text-muted: #64748b;
+            --color-text-accent: #0284c7;
+            --color-primary: #0284c7;
+            --color-primary-foreground: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family-content);
+            font-weight: var(--font-weight-content);
+            font-size: var(--font-size-content);
+            line-height: var(--line-height-content);
+            overflow-x: hidden;
+        }
+
+        .slide {
+            width: 960px;
+            height: 540px;
+            margin: 0 auto 20px;
+            display: flex;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .row { flex-direction: row; }
+        .col { flex-direction: column; }
+        .center {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .items-center { align-items: center; }
+        .items-start { align-items: flex-start; }
+        .fill-width { flex: 1; }
+        .fill-height { flex: 1; display: flex; flex-direction: column; }
+        .gap-sm { gap: 0.5rem; }
+        .gap-md { gap: 1rem; }
+        .gap-lg { gap: 1.5rem; }
+        .gap-xl { gap: 2rem; }
+
+        .p-4 { padding: 1rem; }
+        .p-6 { padding: 1.5rem; }
+        .p-8 { padding: 2rem; }
+        .p-12 { padding: 3rem; }
+        .p-16 { padding: 4rem; }
+
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mb-8 { margin-bottom: 2rem; }
+        .mb-12 { margin-bottom: 3rem; }
+
+        .mt-2 { margin-top: 0.5rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mt-6 { margin-top: 1.5rem; }
+        .mt-8 { margin-top: 2rem; }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-family-display);
+            font-weight: var(--font-weight-display);
+            line-height: 1.2;
+            margin: 0;
+        }
+
+        h1 { font-size: 3.5rem; }
+        h2 { font-size: 2.5rem; }
+        h3 { font-size: 1.85rem; }
+        h4 { font-size: 1.6rem; }
+
+        .text-6xl { font-size: 4rem; }
+        .text-5xl { font-size: 3.5rem; }
+        .text-4xl { font-size: 2.5rem; }
+        .text-3xl { font-size: 2rem; }
+        .text-2xl { font-size: 1.75rem; }
+        .text-xl { font-size: 1.4rem; }
+        .text-lg { font-size: 1.25rem; }
+        .text-base { font-size: 1.1rem; }
+        .text-sm { font-size: 1rem; }
+
+        .font-bold { font-weight: 700; }
+        .font-semibold { font-weight: 600; }
+        .font-medium { font-weight: 500; }
+
+        .text-center { text-align: center; }
+        .opacity-90 { opacity: 0.9; }
+        .opacity-80 { opacity: 0.8; }
+
+        ul, ol {
+            margin-left: 2rem;
+            line-height: 2;
+        }
+
+        li { margin-bottom: 0.75rem; }
+        li:last-child { margin-bottom: 0; }
+
+        code {
+            background-color: #e2e8f0;
+            color: #0f172a;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            font-weight: 500;
+        }
+
+        pre {
+            background-color: #1e293b;
+            color: #f1f5f9;
+            padding: 1.5rem;
+            font-size: 0.85rem;
+            overflow-y: auto;
+            max-height: 380px;
+            border-radius: 4px;
+            border-left: 4px solid #0284c7;
+        }
+
+        .card-rect {
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="theme-light">
+
+    <!-- Slide 1: Title Slide -->
+    <section class="slide p-16 col center" style="background-color: #0284c7; color: #ffffff;">
+        <h1 class="text-6xl mb-4" style="color: #ffffff;">Advanced JUnit & Mockito</h1>
+        <p class="text-2xl mb-8" style="color: #ffffff;">Professional Unit Testing in Java</p>
+        <p class="text-lg" style="color: #ffffff;">Master sophisticated testing patterns • Boost code quality • Accelerate development</p>
+    </section>
+
+    <!-- Slide 2: Agenda -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Training Agenda</h2>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li><span style="color: #0284c7; font-weight: bold;">Advanced JUnit Concepts</span> - Parameterized tests, test lifecycle, best practices</li>
+            <li><span style="color: #0284c7; font-weight: bold;">Mockito Mastery</span> - Spies, argument captors, stubbing strategies</li>
+            <li><span style="color: #0284c7; font-weight: bold;">Real-World Patterns</span> - Testing microservices, async code, complex dependencies</li>
+            <li><span style="color: #0284c7; font-weight: bold;">Code Coverage</span> - Metrics, tools, and quality gates</li>
+        </ul>
+    </section>
+
+    <!-- Slide 3: JUnit Evolution -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">JUnit Evolution: 4 to 5</h2>
+        <div class="fill-height row gap-lg">
+            <div class="fill-width" style="background-color: #f1f5f9; color: #0f172a; padding: 2rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                <h3 style="color: #0284c7; margin-bottom: 1rem;">JUnit 4 (Annotations)</h3>
+                <p style="color: #475569; font-size: 1.1rem;">@Test, @Before, @After, @RunWith</p>
+            </div>
+            <div class="fill-width" style="background-color: #f1f5f9; color: #0f172a; padding: 2rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                <h3 style="color: #0284c7; margin-bottom: 1rem;">JUnit 5 (Jupiter)</h3>
+                <p style="color: #475569; font-size: 1.1rem;">@BeforeEach, @DisplayName, parameterized tests, extensions</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 4: Parameterized Tests -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Parameterized Tests: Power & Efficiency</h2>
+        <p class="text-lg mb-4" style="color: #0f172a;">Execute same test with multiple datasets:</p>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li><code>@ParameterizedTest</code> - Run single test with multiple inputs</li>
+            <li><code>@CsvSource</code> - Inline CSV data for quick tests</li>
+            <li><code>@ValueSource</code> - Multiple primitive values</li>
+            <li><code>@MethodSource</code> - Complex objects from factory methods</li>
+        </ul>
+    </section>
+
+    <!-- Slide 5: Parameterized Tests Code Demo -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 2rem;">Code Demo: Parameterized Tests</h2>
+        <pre><code>@ParameterizedTest
+@CsvSource({"10, 5, 15", "20, 10, 30", 
+  "-5, 5, 0"})
+void testAddition(int a, int b, 
+    int expected) {
+  Calculator calc = new Calculator();
+  int result = calc.add(a, b);
+  assertEquals(expected, result);
+}</code></pre>
+    </section>
+
+    <!-- Slide 6: Test Lifecycle -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Test Lifecycle Callbacks</h2>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li><code>@BeforeAll</code> - Once per class (static, setup resources)</li>
+            <li><code>@BeforeEach</code> - Before every test (initialize state)</li>
+            <li><code>@Test</code> - The actual test method</li>
+            <li><code>@AfterEach</code> - After every test (cleanup)</li>
+            <li><code>@AfterAll</code> - Once per class (release resources)</li>
+        </ul>
+    </section>
+
+    <!-- Slide 7: Test Lifecycle Code Demo -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 1.9rem;">Code Demo: Test Lifecycle</h2>
+        <pre><code>@ExtendWith(MockitoExtension.class)
+class UserServiceLifecycleTest {
+  private static Database db;
+  private UserService service;
+
+  @BeforeAll
+  static void setupClass() {
+    db = new Database();
+    db.connect();
+  }
+
+  @BeforeEach
+  void setup() {
+    service = new UserService(db);
+  }
+
+  @Test
+  void testGetUser() {
+    User user = service.getUser(1);
+    assertNotNull(user);
+  }
+
+  @AfterEach
+  void cleanup() {
+    db.clearData();
+  }
+}</code></pre>
+    </section>
+
+    <!-- Slide 8: DisplayName & Nested -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Better Organization: DisplayName & Nested</h2>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li><code>@DisplayName</code> - Use readable sentences instead of camelCase</li>
+            <li><code>@Nested</code> - Group related tests in inner classes</li>
+            <li>Share setup code with inner @BeforeEach</li>
+            <li>Organize tests by feature or behavior</li>
+            <li>Clear test reports with descriptive names</li>
+        </ul>
+    </section>
+
+    <!-- Slide 9: DisplayName & Nested Code Demo -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 1.85rem;">Code Demo: DisplayName & Nested</h2>
+        <pre><code>@DisplayName("User Service Tests")
+class UserServiceTest {
+  @Nested
+  @DisplayName("When creating users")
+  class CreateUserTests {
+    @Test
+    @DisplayName("Should create valid user")
+    void validUserCreation() {
+      User u = new User("John");
+      assertTrue(service.isValid(u));
+    }
+  }
+
+  @Nested
+  @DisplayName("When finding users")
+  class FindUserTests {
+    @Test
+    void findById() {
+      User u = service.findById(1);
+      assertNotNull(u);
+    }
+  }
+}</code></pre>
+    </section>
+
+    <!-- Slide 10: Advanced Assertions assertAll -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Advanced Assertions: assertAll()</h2>
+        <p class="text-lg mb-4" style="color: #0f172a;">Group assertions - all execute even if one fails:</p>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li>All assertions are executed regardless of failures</li>
+            <li>See complete state of objects in one report</li>
+            <li>Better for verifying related properties</li>
+            <li>Cleaner output with named assertion groups</li>
+        </ul>
+    </section>
+
+    <!-- Slide 11: assertAll Code Demo -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 1.9rem;">Code Demo: assertAll Grouping</h2>
+        <pre><code>@Test
+void testUserGroupedAssertions() {
+  User user = new User("John", "Doe");
+  
+  assertAll("user",
+    () -> assertEquals("John", 
+      user.getFirstName()),
+    () -> assertEquals("Doe", 
+      user.getLastName()),
+    () -> assertTrue(
+      user.getFullName().contains("John")),
+    () -> assertNotNull(user.getId())
+  );
+}
+
+@Test
+void testMultipleGroupedAssertions() {
+  String firstName = "Robert";
+  String lastName = "Smith";
+  
+  assertAll("names",
+    () -> assertEquals("Robert", firstName),
+    () -> assertTrue(firstName
+      .startsWith("R")),
+    () -> assertEquals("Smith", lastName)
+  );
+}</code></pre>
+    </section>
+
+    <!-- Slide 12: Exception Testing -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Exception Testing: assertThrows()</h2>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li>Modern JUnit 5 way to verify exceptions</li>
+            <li>assertThrows returns the exception for message verification</li>
+            <li>assertThrowsExactly for exact type matching</li>
+            <li>Test both success and failure paths</li>
+        </ul>
+    </section>
+
+    <!-- Slide 13: assertThrows Code Demo -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 1.9rem;">Code Demo: Exception Testing</h2>
+        <pre><code>@Test
+void testNumberFormatException() {
+  NumberFormatException exception = 
+    assertThrows(
+      NumberFormatException.class,
+      () -> Integer.parseInt("One"));
+  
+  assertEquals("For input string: \"One\"",
+    exception.getMessage());
+}
+
+@Test
+void testCustomException() {
+  UserService service = new UserService();
+  
+  InvalidUserException ex = assertThrows(
+    InvalidUserException.class,
+    () -> service.createUser(null));
+  
+  assertTrue(ex.getMessage()
+    .contains("User cannot be null"));
+}</code></pre>
+    </section>
+
+    <!-- Slide 14: Timeout Testing -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Performance Testing: assertTimeout()</h2>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li>Assert that operations complete within time limits</li>
+            <li>assertTimeout - continues even if timeout exceeded</li>
+            <li>assertTimeoutPreemptively - stops execution at timeout</li>
+            <li>Use Duration for readable time specifications</li>
+        </ul>
+    </section>
+
+    <!-- Slide 15: assertTimeout Code Demo -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 1.9rem;">Code Demo: Performance Testing</h2>
+        <pre><code>@Test
+void testPerformanceWithTimeout() {
+  ServiceUnderTest service = new Service();
+  
+  assertTimeout(Duration.ofMillis(100), 
+    () -> service.performFastTask());
+}
+
+@Test
+void testTimeoutWithMessage() {
+  assertTimeout(Duration.ofSeconds(2),
+    () -> database
+      .query("SELECT * FROM users"),
+    "Query completes within 2 seconds"
+  );
+}
+
+@Test
+void testTimeoutPreemptively() {
+  assertTimeoutPreemptively(
+    Duration.ofMillis(50),
+    () -> Thread.sleep(100));
+}</code></pre>
+    </section>
+
+    <!-- Slide 16: Conditional Execution -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Conditional Execution</h2>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li><code>@EnabledOnOs</code> - Execute only on specific OS</li>
+            <li><code>@EnabledOnJre</code> - Execute on specific Java versions</li>
+            <li><code>@EnabledIfEnvironmentVariable</code> - Based on env vars</li>
+            <li><code>@DisabledOnJre</code> - Skip on specific versions</li>
+        </ul>
+    </section>
+
+    <!-- Slide 17: Conditional Tests Code Demo -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 1.85rem;">Code Demo: Conditional Tests</h2>
+        <pre><code>@EnabledOnOs(OS.LINUX)
+@Test
+void runOnlyOnLinux() {
+  assertTrue(Files.exists(
+    Paths.get("/etc")));
+}
+
+@EnabledOnJre(JRE.JAVA_17)
+@Test
+void runOnlyOnJava17() {
+  // Java 17+ features test
+}
+
+@DisabledOnJre(JRE.JAVA_11)
+@Test
+void skipOnJava11() {
+  // Not compatible with Java 11
+}
+
+@EnabledIfEnvironmentVariable(
+  named = "ENV", matches = "prod")
+@Test
+void runInProduction() {
+  // Production only
+}</code></pre>
+    </section>
+
+    <!-- Slide 18: JUnit 5 Extensions -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">JUnit 5 Extensions</h2>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li>Modular replacement for JUnit 4's @RunWith</li>
+            <li><code>@ExtendWith</code> - Register custom extensions</li>
+            <li><code>@ExtendWith(MockitoExtension.class)</code> - Auto mock init</li>
+            <li>Custom lifecycle callbacks and parameter injection</li>
+        </ul>
+    </section>
+
+    <!-- Slide 19: Tagging and Filtering Tests -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Tagging and Filtering Tests</h2>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li><code>@Tag("Fast")</code> or <code>@Tag("Slow")</code></li>
+            <li>Configure Maven/Gradle to include/exclude tags</li>
+            <li>Different test suites for CI stages</li>
+            <li>Run fast tests frequently, slow tests nightly</li>
+        </ul>
+    </section>
+
+    <!-- Slide 20: Tags Code Demo -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 1.9rem;">Code Demo: Test Tagging</h2>
+        <pre><code>@Tag("Fast")
+@Test
+void quickUnitTest() {
+  Calculator calc = new Calculator();
+  int result = calc.add(1, 1);
+  assertEquals(2, result);
+}
+
+@Tag("Slow")
+@Test
+void databaseIntegrationTest() {
+  UserRepository repo = 
+    new UserRepository();
+  List<User> users = repo.findAll();
+  assertTrue(users.size() > 0);
+}</code></pre>
+    </section>
+
+    <!-- Slide 21: AAA Pattern Best Practice -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Best Practice: AAA Pattern</h2>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li><span style="color: #0284c7; font-weight: bold;">Arrange</span> - Set up objects, mocks, test data</li>
+            <li><span style="color: #0284c7; font-weight: bold;">Act</span> - Call the method under test</li>
+            <li><span style="color: #0284c7; font-weight: bold;">Assert</span> - Verify the results</li>
+            <li>Clear separation makes tests readable and maintainable</li>
+        </ul>
+    </section>
+
+    <!-- Slide 22: AAA Pattern Code Demo -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 1.9rem;">Code Demo: AAA Pattern</h2>
+        <pre><code>@Test
+void testTransferMoneyAAAPattern() {
+  Account from = new Account("John", 1000);
+  Account to = new Account("Jane", 500);
+  BankService bank = new BankService();
+  
+  boolean result = bank.transfer(
+    from, to, 200);
+  
+  assertTrue(result);
+  assertEquals(800, from.getBalance());
+  assertEquals(700, to.getBalance());
+}
+
+@Test
+void testInvalidTransferAAA() {
+  Account from = new Account("John", 100);
+  Account to = new Account("Jane", 500);
+  BankService bank = new BankService();
+  
+  assertThrows(
+    InsufficientFundsException.class,
+    () -> bank.transfer(from, to, 200));
+}</code></pre>
+    </section>
+
+    <!-- Slide 23: Why Mockito -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Why Mockito? Isolation & Control</h2>
+        <p class="text-lg mb-4" style="color: #0f172a;">Mockito enables true unit testing by:</p>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li>Isolating code under test from external dependencies</li>
+            <li>Controlling behavior of collaborator objects (mocks)</li>
+            <li>Verifying interactions and method invocations</li>
+            <li>Speeding up tests by avoiding slow I/O, databases, APIs</li>
+        </ul>
+    </section>
+
+    <!-- Slide 24: Mockito Isolation Code Demo -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 1.9rem;">Code Demo: Mockito Isolation</h2>
+        <pre><code>@ExtendWith(MockitoExtension.class)
+class ProductServiceTest {
+  @Mock private Database db;
+  @Mock private InventoryService inventory;
+  @InjectMocks private ProductService service;
+
+  @Test
+  void testGetProductWithMocks() {
+    Product mockProduct = new Product(
+      "Laptop", 1000);
+    when(db.findById(1))
+      .thenReturn(mockProduct);
+    when(inventory.isInStock(1))
+      .thenReturn(true);
+    
+    Product result = service.getProduct(1);
+    
+    assertEquals("Laptop", result.getName());
+    verify(db).findById(1);
+    verify(inventory).isInStock(1);
+  }
+}</code></pre>
+    </section>
+
+    <!-- Slide 25: Mock vs Stub vs Spy -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Mock vs Stub vs Spy</h2>
+        <div class="fill-height row gap-md">
+            <div class="fill-width" style="background-color: #f1f5f9; color: #0f172a; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                <h3 style="color: #0284c7; font-size: 1.4rem; margin-bottom: 0.75rem;">Mock</h3>
+                <p style="color: #475569; font-size: 1rem;">Complete fake. Verify interactions. No real logic.</p>
+            </div>
+            <div class="fill-width" style="background-color: #f1f5f9; color: #0f172a; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                <h3 style="color: #0284c7; font-size: 1.4rem; margin-bottom: 0.75rem;">Stub</h3>
+                <p style="color: #475569; font-size: 1rem;">Fake with fixed responses. No verification.</p>
+            </div>
+            <div class="fill-width" style="background-color: #f1f5f9; color: #0f172a; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                <h3 style="color: #0284c7; font-size: 1.4rem; margin-bottom: 0.75rem;">Spy</h3>
+                <p style="color: #475569; font-size: 1rem;">Real object. Tracks calls. Partial mocking.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 26: Mock vs Stub vs Spy Code Demo -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 1.9rem;">Code Demo: Mock vs Spy</h2>
+        <pre><code>@Test
+void testMockVsSpy() {
+  List<String> list = Arrays.asList("A", "B");
+  
+  List<String> mock = mock(List.class);
+  when(mock.get(0)).thenReturn("Mocked");
+  
+  assertEquals("Mocked", mock.get(0));
+  
+  List<String> spy = spy(list);
+  when(spy.get(0)).thenReturn("Spied");
+  
+  assertEquals("Spied", spy.get(0));
+  assertEquals(2, spy.size());
+  verify(spy).get(0);
+}</code></pre>
+    </section>
+
+    <!-- Slide 27: Mockito Core Concepts -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Mockito Core: Creating & Configuring</h2>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li><code>mock(Class.class)</code> - Create a mock</li>
+            <li><code>when(mock.method()).thenReturn(value)</code> - Stub behavior</li>
+            <li><code>verify(mock).method()</code> - Assert method was called</li>
+            <li><code>spy(realObject)</code> - Partial mock of real object</li>
+            <li><code>@Mock, @Spy, @InjectMocks</code> - Annotations for cleaner code</li>
+        </ul>
+    </section>
+
+    <!-- Slide 28: Mockito Basics Code Demo -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 2rem;">Code Demo: Mockito Basics</h2>
+        <pre><code>@ExtendWith(MockitoExtension.class)
+class UserServiceTest {
+  @Mock private UserRepository repo;
+  @InjectMocks private UserService service;
+
+  @Test
+  void testGetUserById() {
+    User mockUser = new User("John", 
+      "john@example.com");
+    when(repo.findById(1))
+      .thenReturn(mockUser);
+    
+    User result = service.getUserById(1);
+    
+    assertEquals("John", result.getName());
+    verify(repo).findById(1);
+  }
+}</code></pre>
+    </section>
+
+    <!-- Slide 29: Advanced Stubbing Strategies -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Advanced Stubbing Strategies</h2>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li><code>thenThrow()</code> - Simulate exceptions</li>
+            <li><code>thenCallRealMethod()</code> - Partial mock behavior</li>
+            <li><code>thenAnswer()</code> - Custom logic for responses</li>
+            <li><code>ArgumentMatchers</code> - Match args: any(), eq(), startsWith()</li>
+            <li><code>timeout(millis)</code> - Assert async behavior</li>
+        </ul>
+    </section>
+
+    <!-- Slide 30: Stubbing Strategies Code Demo -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 1.9rem;">Code Demo: Stubbing Strategies</h2>
+        <pre><code>@Test
+void testAdvancedStubbing() {
+  UserService svc = mock(UserService.class);
+  
+  when(svc.getUserById(-1))
+    .thenThrow(new UserNotFoundException());
+  
+  when(svc.createUser(any())).thenAnswer(inv -> {
+    User u = inv.getArgument(0);
+    u.setId(System.nanoTime());
+    return u;
+  });
+  
+  when(svc.searchByEmail(startsWith("admin")))
+    .thenReturn(
+      new User("admin@example.com"));
+  
+  assertThrows(UserNotFoundException.class,
+    () -> svc.getUserById(-1));
+}</code></pre>
+    </section>
+
+    <!-- Slide 31: ArgumentMatchers Code Demo -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 1.9rem;">Code Demo: ArgumentMatchers</h2>
+        <pre><code>@Test
+void testArgumentMatchers() {
+  EmailService email = mock(EmailService.class);
+  
+  when(email.send(any())).thenReturn(true);
+  
+  when(email.sendVerification(
+    eq("test@example.com"))).thenReturn(true);
+  
+  when(email.send(contains("urgent")))
+    .thenReturn(true);
+  when(email.send(startsWith("Hello")))
+    .thenReturn(true);
+  
+  assertTrue(email.send("Hello World"));
+  assertTrue(email.sendVerification(
+    "test@example.com"));
+}</code></pre>
+    </section>
+
+    <!-- Slide 32: Argument Captors -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Argument Captors: Capturing & Verifying</h2>
+        <p class="text-lg mb-4" style="color: #0f172a;">Capture arguments passed to mocked methods:</p>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li>Extract complex objects for deep verification</li>
+            <li>Test immutability and data transformation</li>
+            <li><code>ArgumentCaptor.forClass()</code> - Capture and assert</li>
+            <li><code>captor.getValue()</code> - Retrieve captured value</li>
+            <li><code>captor.getAllValues()</code> - Multiple invocations</li>
+        </ul>
+    </section>
+
+    <!-- Slide 33: Argument Captors Code Demo -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 1.9rem;">Code Demo: Argument Captors</h2>
+        <pre><code>@Test
+void testCaptureArguments() {
+  EmailService email = mock(EmailService.class);
+  NotificationService notifier = 
+    new NotificationService(email);
+  
+  ArgumentCaptor<String> captor = 
+    ArgumentCaptor.forClass(String.class);
+  
+  notifier.sendAlert("Critical Alert");
+  
+  verify(email).send(captor.capture());
+  
+  String sentMessage = captor.getValue();
+  assertTrue(sentMessage.contains("Critical"));
+  assertEquals(1, 
+    captor.getAllValues().size());
+}</code></pre>
+    </section>
+
+    <!-- Slide 34: Testing Async & Reactive Code -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Testing Async & Reactive Code</h2>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li><code>CompletableFuture</code> - Mock and verify async operations</li>
+            <li><code>verify(mock, timeout(millis))</code> - Assert eventual execution</li>
+            <li><code>Project Reactor</code> - StepVerifier for stream testing</li>
+            <li><code>@Timeout</code> - Timeout on individual tests</li>
+        </ul>
+    </section>
+
+    <!-- Slide 35: Async Testing Code Demo -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 1.9rem;">Code Demo: CompletableFuture</h2>
+        <pre><code>@Test
+@Timeout(5)
+void testAsyncWithTimeout() {
+  AsyncService svc = 
+    mock(AsyncService.class);
+  when(svc.fetchAsync()).thenReturn(
+    CompletableFuture
+      .completedFuture("Result"));
+  Processor processor = new Processor(svc);
+  
+  CompletableFuture<String> result = 
+    processor.processAsync();
+  
+  verify(svc, timeout(1000)).fetchAsync();
+  assertEquals("Result", result.join());
+}</code></pre>
+    </section>
+
+    <!-- Slide 36: Async Verification Code Demo -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 1.9rem;">Code Demo: Async Verification</h2>
+        <pre><code>@Test
+void testAsyncMultipleVerifications() {
+  CallbackService callback = 
+    mock(CallbackService.class);
+  AsyncTask task = new AsyncTask(callback);
+  
+  task.executeAsync();
+  
+  verify(callback, timeout(2000))
+    .onSuccess(any());
+  
+  verify(callback, timeout(1000).times(1))
+    .onSuccess(any());
+  
+  verify(callback, never())
+    .onError(any());
+}</code></pre>
+    </section>
+
+    <!-- Slide 37: Microservices Testing -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Microservices Testing Strategy</h2>
+        <p class="text-lg mb-4" style="color: #0f172a;">Layered approach for distributed systems:</p>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li>Unit tests with mocked REST clients and databases</li>
+            <li>Integration tests with TestContainers (Docker)</li>
+            <li>Contract tests (Pact) between services</li>
+            <li>E2E tests in staging environments</li>
+        </ul>
+    </section>
+
+    <!-- Slide 38: REST Client Mocking Code Demo -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 1.9rem;">Code Demo: REST Client Mocking</h2>
+        <pre><code>@ExtendWith(MockitoExtension.class)
+class OrderServiceTest {
+  @Mock private RestClient restClient;
+  @Mock private InventoryService inventory;
+  @InjectMocks private OrderService service;
+
+  @Test
+  void testCreateOrderWithMicro() {
+    when(restClient.post("/order", any()))
+      .thenReturn("Order-123");
+    when(inventory.reserve(anyInt()))
+      .thenReturn(true);
+    
+    String orderId = service.createOrder(
+      new OrderRequest(100));
+    
+    assertEquals("Order-123", orderId);
+    verify(restClient).post("/order", any());
+    verify(inventory).reserve(100);
+  }
+}</code></pre>
+    </section>
+
+    <!-- Slide 39: Code Coverage -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Code Coverage: Measurement & Goals</h2>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li><span style="color: #0284c7; font-weight: bold;">JaCoCo</span> - Industry standard coverage tool</li>
+            <li><span style="color: #0284c7; font-weight: bold;">80%+ coverage</span> - Realistic target for critical code</li>
+            <li><span style="color: #0284c7; font-weight: bold;">Branch coverage</span> - Better than line coverage</li>
+            <li><span style="color: #0284c7; font-weight: bold;">Coverage gates</span> - Enforce minimums in CI/CD pipelines</li>
+        </ul>
+    </section>
+
+    <!-- Slide 40: Common Pitfalls -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Common Pitfalls to Avoid</h2>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li>Over-mocking - Mock too much, test nothing real</li>
+            <li>Brittle tests - Verify implementation, not behavior</li>
+            <li>Mock static methods - Use PowerMock sparingly</li>
+            <li>Ignoring exceptions - Mock exception paths</li>
+            <li>Testing private methods - Sign of poor design</li>
+        </ul>
+    </section>
+
+    <!-- Slide 41: Pitfall Over-mocking -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 1.9rem;">Pitfall: Over-mocking</h2>
+        <pre><code>// BAD: Mocking the class under test
+@Test
+void overMockingExample() {
+  UserValidator validator = 
+    mock(UserValidator.class);
+  when(validator.isValid(any()))
+    .thenReturn(true);
+}
+
+// GOOD: Mock dependencies only
+@Test
+void properMockingExample() {
+  UserRepository repo = 
+    mock(UserRepository.class);
+  UserValidator validator = 
+    new UserValidator(repo);
+  User user = new User("john", 
+    "john@ex.com");
+  
+  assertTrue(validator.isValid(user));
+}</code></pre>
+    </section>
+
+    <!-- Slide 42: Pitfall Brittle Tests -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 1.9rem;">Pitfall: Brittle Tests</h2>
+        <pre><code>// BAD: Verify implementation details
+@Test
+void brittleTest() {
+  UserService svc = new UserService(repo);
+  User user = new User("john");
+  
+  svc.createUser(user);
+  
+  InOrder order = inOrder(repo);
+  order.verify(repo).validate(user);
+  order.verify(repo).save(user);
+}
+
+// GOOD: Verify behavior, not details
+@Test
+void robustTest() {
+  UserService svc = new UserService(repo);
+  
+  User created = svc.createUser(user);
+  
+  assertNotNull(created.getId());
+  verify(repo).save(any());
+}</code></pre>
+    </section>
+
+    <!-- Slide 43: Pitfall Exception Handling -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 1.9rem;">Pitfall: Ignoring Exceptions</h2>
+        <pre><code>// BAD: Not testing exception paths
+@Test
+void ignoreExceptions() {
+  UserService svc = new UserService(repo);
+  User user = svc.createUser(newUser);
+}
+
+// GOOD: Test both success and failure
+@Test
+void testSuccessPath() {
+  when(repo.save(any())).thenReturn(user);
+  User created = svc.createUser(user);
+  assertNotNull(created);
+}
+
+@Test
+void testExceptionPath() {
+  when(repo.save(any()))
+    .thenThrow(DatabaseException.class);
+  
+  assertThrows(DatabaseException.class,
+    () -> svc.createUser(user));
+}</code></pre>
+    </section>
+
+    <!-- Slide 44: Best Practices -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Best Practices & Guidelines</h2>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li>One assertion per test (or related assertions)</li>
+            <li>Test names describe behavior, not implementation</li>
+            <li>Arrange-Act-Assert pattern for clarity</li>
+            <li>Mock external dependencies, test business logic</li>
+            <li>Keep tests fast and deterministic</li>
+        </ul>
+    </section>
+
+    <!-- Slide 45: Real-World Example -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Real-World Example: Payment Service</h2>
+        <p class="text-lg mb-4" style="color: #0f172a;">Testing a service with multiple dependencies:</p>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li>PaymentRepository (database mock)</li>
+            <li>PaymentGateway (external API mock)</li>
+            <li>EmailService (notification mock)</li>
+            <li>Verify transaction, API call, and email sent</li>
+        </ul>
+    </section>
+
+    <!-- Slide 46: Payment Service Code Demo -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 1.8rem;">Code Demo: Payment Service Test</h2>
+        <pre><code>@Test
+void testProcessPaymentSuccess() {
+  PaymentRepository repo = 
+    mock(PaymentRepository.class);
+  PaymentGateway gateway = 
+    mock(PaymentGateway.class);
+  EmailService email = mock(EmailService.class);
+  PaymentService service = 
+    new PaymentService(repo, gateway, email);
+  
+  when(gateway.charge(100))
+    .thenReturn("SUCCESS");
+  
+  boolean result = service.processPayment(
+    new Payment(100, "john@ex.com"));
+  
+  assertTrue(result);
+  verify(repo).saveTransaction(any());
+  verify(gateway).charge(100);
+  verify(email).sendReceipt(any());
+}</code></pre>
+    </section>
+
+    <!-- Slide 47: Coverage Metrics -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Code Coverage Metrics</h2>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li><span style="color: #0284c7; font-weight: bold;">JaCoCo</span> - Industry standard coverage tool</li>
+            <li><span style="color: #0284c7; font-weight: bold;">Line Coverage</span> - Checks if lines executed</li>
+            <li><span style="color: #0284c7; font-weight: bold;">Branch Coverage</span> - All if/else paths taken</li>
+            <li><span style="color: #0284c7; font-weight: bold;">80%+ coverage</span> - Target for critical code</li>
+        </ul>
+    </section>
+
+    <!-- Slide 48: Coverage pom.xml -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 1.8rem;">Code Example: JaCoCo Configuration</h2>
+        <pre><code>&lt;plugin&gt;
+  &lt;groupId&gt;org.jacoco&lt;/groupId&gt;
+  &lt;artifactId&gt;jacoco-maven-plugin&lt;/artifactId&gt;
+  &lt;version&gt;0.8.8&lt;/version&gt;
+  &lt;executions&gt;
+    &lt;execution&gt;
+      &lt;goals&gt;&lt;goal&gt;prepare-agent&lt;/goal&gt;
+      &lt;/goals&gt;
+    &lt;/execution&gt;
+  &lt;/executions&gt;
+  &lt;configuration&gt;
+    &lt;rules&gt;
+      &lt;rule&gt;
+        &lt;limits&gt;
+          &lt;limit&gt;
+            &lt;counter&gt;LINE&lt;/counter&gt;
+            &lt;value&gt;COVEREDRATIO&lt;/value&gt;
+            &lt;minimum&gt;0.80&lt;/minimum&gt;
+          &lt;/limit&gt;
+        &lt;/limits&gt;
+      &lt;/rule&gt;
+    &lt;/rules&gt;
+  &lt;/configuration&gt;
+&lt;/plugin&gt;</code></pre>
+    </section>
+
+    <!-- Slide 49: Quality Gates -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Quality Gates & CI/CD Integration</h2>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li>Enforce 80%+ coverage to prevent PR merges</li>
+            <li>Fail builds if coverage drops below threshold</li>
+            <li>SonarQube integration for detailed metrics</li>
+            <li>Track coverage trends over time</li>
+        </ul>
+    </section>
+
+    <!-- Slide 50: Edge Case & Boundary Testing -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Edge Case & Boundary Testing</h2>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li>Test null inputs and empty collections</li>
+            <li>Boundary values (0, negative, max/min)</li>
+            <li>Unicode and special characters</li>
+            <li>Concurrent access and race conditions</li>
+        </ul>
+    </section>
+
+    <!-- Slide 51: Edge Case Code Demo -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 1.8rem;">Code Demo: Edge Case Testing</h2>
+        <pre><code>@ParameterizedTest
+@CsvSource({"0", "-1", "2147483647", 
+  "-2147483648", "null"})
+void testBoundaryValues(Integer value) {
+  if (value == null) {
+    assertThrows(
+      IllegalArgumentException.class,
+      () -> calculator.divide(10, value));
+  } else if (value == 0) {
+    assertThrows(
+      ArithmeticException.class,
+      () -> calculator.divide(10, value));
+  } else {
+    int result = calculator.divide(10, value);
+    assertTrue(result >= 0);
+  }
+}
+
+@Test
+void testEmptyAndNullCollections() {
+  assertTrue(service.process(null)
+    .isEmpty());
+  assertTrue(service.process(new ArrayList<>())
+    .isEmpty());
+}</code></pre>
+    </section>
+
+    <!-- Slide 52: Unicode & Concurrency Testing -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Unique Scenarios: Unicode & Concurrency</h2>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li>Unicode strings with emoji and special chars</li>
+            <li>Concurrent operations with ExecutorService</li>
+            <li>Race condition detection and prevention</li>
+            <li>Thread-safety verification with mocks</li>
+        </ul>
+    </section>
+
+    <!-- Slide 53: Unicode & Concurrency Code Demo -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 1.8rem;">Code Demo: Unicode & Concurrency</h2>
+        <pre><code>@Test
+void testUnicodeHandling() {
+  String emoji = "Test 🚀 Unicode 你好";
+  String chinese = "中文测试";
+  String arabic = "اختبار";
+  
+  assertTrue(service.validate(emoji));
+  assertEquals(emoji.length(), 
+    service.process(emoji).length());
+  assertEquals(chinese, 
+    service.normalize(chinese));
+}
+
+@Test
+void testConcurrentAccess() throws Exception {
+  ExecutorService executor = 
+    Executors.newFixedThreadPool(5);
+  CountDownLatch latch = 
+    new CountDownLatch(10);
+  
+  for (int i = 0; i < 10; i++) {
+    executor.submit(() -> {
+      service.addUser(new User());
+      latch.countDown();
+    });
+  }
+  
+  latch.await(2, TimeUnit.SECONDS);
+  assertEquals(10, service.getUserCount());
+}</code></pre>
+    </section>
+
+    <!-- Slide 54: State Mutation & Immutability Testing -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">State Mutation & Immutability</h2>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li>Test that objects are immutable when required</li>
+            <li>Verify no side effects on mocked objects</li>
+            <li>Use ArgumentCaptor to detect mutations</li>
+            <li>Test deep copies vs shallow copies</li>
+        </ul>
+    </section>
+
+    <!-- Slide 55: Immutability Code Demo -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 1.8rem;">Code Demo: Immutability Testing</h2>
+        <pre><code>@Test
+void testImmutabilityWithCaptor() {
+  UserRepository repo = 
+    mock(UserRepository.class);
+  ArgumentCaptor<User> captor = 
+    ArgumentCaptor.forClass(User.class);
+  
+  User original = new User("John", 30);
+  service.saveAndModify(repo, original);
+  
+  verify(repo).save(captor.capture());
+  User saved = captor.getValue();
+  
+  assertEquals("John", saved.getName());
+  original.setAge(35);
+  assertEquals(30, saved.getAge());
+}
+
+@Test
+void testNoUnexpectedMutations() {
+  List<String> items = spy(new ArrayList<>());
+  service.processItems(items);
+  
+  verify(items).clear();
+  verify(items, never()).remove(any());
+}</code></pre>
+    </section>
+
+    <!-- Slide 56: Testing Ecosystem Tools -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Testing Ecosystem Tools</h2>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li><span style="color: #0284c7; font-weight: bold;">JUnit 5</span> - Testing framework</li>
+            <li><span style="color: #0284c7; font-weight: bold;">Mockito</span> - Mocking library</li>
+            <li><span style="color: #0284c7; font-weight: bold;">AssertJ</span> - Fluent assertions</li>
+            <li><span style="color: #0284c7; font-weight: bold;">JaCoCo</span> - Code coverage measurement</li>
+            <li><span style="color: #0284c7; font-weight: bold;">Maven/Gradle</span> - Build and automation</li>
+        </ul>
+    </section>
+
+    <!-- Slide 57: Closing -->
+    <section class="slide p-16 col center" style="background-color: #0284c7; color: #ffffff;">
+        <h2 class="text-5xl mb-6" style="color: #ffffff;">Elevate Your Testing Game</h2>
+        <p class="text-xl" style="color: #ffffff;">Master JUnit and Mockito to build reliable, maintainable, scalable Java systems.</p>
+        <p class="text-lg mt-8" style="color: #ffffff;">Questions & Discussion</p>
+    </section>
+
+</body>
+</html>
