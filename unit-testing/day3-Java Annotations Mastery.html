@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Annotations Mastery</title>
+    <style>
+        :root {
+            --font-family-display: Arial, sans-serif;
+            --font-weight-display: 600;
+            --font-family-content: Arial, sans-serif;
+            --font-weight-content: 400;
+            --font-size-content: 16px;
+            --line-height-content: 1.4;
+        }
+
+        body.theme-light {
+            --color-bg-base: #ffffff;
+            --color-bg-elevated: #f8fafc;
+            --color-bg-surface: #f1f5f9;
+            --color-bg-muted: #e2e8f0;
+            --color-text-primary: #0f172a;
+            --color-text-secondary: #475569;
+            --color-text-muted: #64748b;
+            --color-text-accent: #0284c7;
+            --color-primary: #0284c7;
+            --color-primary-foreground: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family-content);
+            font-weight: var(--font-weight-content);
+            font-size: var(--font-size-content);
+            line-height: var(--line-height-content);
+            overflow-x: hidden;
+        }
+
+        .slide {
+            width: 960px;
+            height: 540px;
+            margin: 0 auto 20px;
+            display: flex;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .row { flex-direction: row; }
+        .col { flex-direction: column; }
+        .center {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .items-center { align-items: center; }
+        .items-start { align-items: flex-start; }
+        .fill-width { flex: 1; }
+        .fill-height { flex: 1; display: flex; flex-direction: column; }
+        .gap-sm { gap: 0.5rem; }
+        .gap-md { gap: 1rem; }
+        .gap-lg { gap: 1.5rem; }
+        .gap-xl { gap: 2rem; }
+
+        .p-4 { padding: 1rem; }
+        .p-6 { padding: 1.5rem; }
+        .p-8 { padding: 2rem; }
+        .p-12 { padding: 3rem; }
+        .p-16 { padding: 4rem; }
+
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mb-8 { margin-bottom: 2rem; }
+        .mb-12 { margin-bottom: 3rem; }
+
+        .mt-2 { margin-top: 0.5rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mt-6 { margin-top: 1.5rem; }
+        .mt-8 { margin-top: 2rem; }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-family-display);
+            font-weight: var(--font-weight-display);
+            line-height: 1.2;
+            margin: 0;
+        }
+
+        h1 { font-size: 3.5rem; }
+        h2 { font-size: 2.5rem; }
+        h3 { font-size: 1.85rem; }
+        h4 { font-size: 1.6rem; }
+
+        .text-6xl { font-size: 4rem; }
+        .text-5xl { font-size: 3.5rem; }
+        .text-4xl { font-size: 2.5rem; }
+        .text-3xl { font-size: 2rem; }
+        .text-2xl { font-size: 1.75rem; }
+        .text-xl { font-size: 1.4rem; }
+        .text-lg { font-size: 1.25rem; }
+        .text-base { font-size: 1.1rem; }
+        .text-sm { font-size: 1rem; }
+
+        .font-bold { font-weight: 700; }
+        .font-semibold { font-weight: 600; }
+        .font-medium { font-weight: 500; }
+
+        .text-center { text-align: center; }
+        .opacity-90 { opacity: 0.9; }
+        .opacity-80 { opacity: 0.8; }
+
+        ul, ol {
+            margin-left: 2rem;
+            line-height: 2;
+        }
+
+        li { margin-bottom: 0.75rem; }
+        li:last-child { margin-bottom: 0; }
+
+        code {
+            background-color: #e2e8f0;
+            color: #0f172a;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            font-weight: 500;
+        }
+
+        pre {
+            background-color: #1e293b;
+            color: #f1f5f9;
+            padding: 1.5rem;
+            font-size: 0.85rem;
+            overflow-y: auto;
+            max-height: 380px;
+            border-radius: 4px;
+            border-left: 4px solid #0284c7;
+        }
+
+        .card-rect {
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="theme-light">
+
+    <!-- Slide 1: Title Slide -->
+    <section class="slide p-16 col center" style="background-color: #0284c7; color: #ffffff;">
+        <h1 class="text-6xl mb-4" style="color: #ffffff;">Java Annotations Mastery</h1>
+        <p class="text-2xl mb-8" style="color: #ffffff;">Complete Guide to Metadata Processing</p>
+        <p class="text-lg" style="color: #ffffff;">Built-in annotations • Custom annotations • Retention & Target • Java 25 enhancements</p>
+    </section>
+
+    <!-- Slide 2: Training Agenda -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Today's Agenda</h2>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li><span style="color: #0284c7; font-weight: bold;">Fundamentals</span> - What are annotations, metadata concept</li>
+            <li><span style="color: #0284c7; font-weight: bold;">Built-in Annotations</span> - @Override, @Deprecated, @FunctionalInterface</li>
+            <li><span style="color: #0284c7; font-weight: bold;">Custom Annotations</span> - @interface, elements, defaults</li>
+            <li><span style="color: #0284c7; font-weight: bold;">Meta-annotations</span> - @Target, @Retention, @Documented, @Repeatable</li>
+            <li><span style="color: #0284c7; font-weight: bold;">Reflection & Processing</span> - Runtime extraction, annotation processors</li>
+        </ul>
+    </section>
+
+    <!-- Slide 3: What are Annotations? -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">What Are Annotations?</h2>
+        <p class="text-lg mb-4" style="color: #0f172a;">Metadata that provides information about code without being part of code logic:</p>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li>Do not directly affect code execution</li>
+            <li>Processed by compiler, tools, or runtime systems</li>
+            <li>Prefixed with <code>@</code> symbol</li>
+            <li>Can target classes, methods, fields, constructors, parameters</li>
+            <li>Enable declarative programming and reduce boilerplate</li>
+        </ul>
+    </section>
+
+    <!-- Slide 4: Annotation Characteristics -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Key Characteristics</h2>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li><span style="color: #0284c7; font-weight: bold;">Declarative</span> - Define what, not how</li>
+            <li><span style="color: #0284c7; font-weight: bold;">Non-intrusive</span> - Separate from business logic</li>
+            <li><span style="color: #0284c7; font-weight: bold;">Lightweight</span> - No runtime overhead unless processed</li>
+            <li><span style="color: #0284c7; font-weight: bold;">Composable</span> - Stack multiple annotations</li>
+            <li><span style="color: #0284c7; font-weight: bold;">Extensible</span> - Create custom annotations easily</li>
+        </ul>
+    </section>
+
+    <!-- Slide 5: Built-in Annotations Overview -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Common Built-in Annotations</h2>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li><code>@Override</code> - Method overrides parent method</li>
+            <li><code>@Deprecated</code> - Mark API as outdated</li>
+            <li><code>@SuppressWarnings</code> - Suppress compiler warnings</li>
+            <li><code>@FunctionalInterface</code> - Single abstract method interface</li>
+            <li><code>@SafeVarargs</code> - Suppress varargs type warnings</li>
+        </ul>
+    </section>
+
+    <!-- Slide 6: @Override Annotation -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 1.9rem;">Code Demo: @Override</h2>
+        <pre><code>public class Animal {
+  public void sound() {
+    System.out.println("Generic sound");
+  }
+}
+
+public class Dog extends Animal {
+  @Override
+  public void sound() {
+    System.out.println("Bark");
+  }
+
+  @Override
+  public String toString() {
+    return "Dog instance";
+  }
+}</code></pre>
+    </section>
+
+    <!-- Slide 7: @Deprecated Annotation -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 1.9rem;">Code Demo: @Deprecated</h2>
+        <pre><code>public class PaymentService {
+  
+  @Deprecated(since = "2.0",
+    forRemoval = true)
+  public void processPayment(int amount) {
+    // Old implementation
+  }
+  
+  @Deprecated(since = "1.5")
+  public String getTransactionId() {
+    return "TXN-001";
+  }
+  
+  // New replacement method
+  public PaymentResult charge(int amount) {
+    return new PaymentResult(true);
+  }
+}</code></pre>
+    </section>
+
+    <!-- Slide 8: @SuppressWarnings Annotation -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">@SuppressWarnings: Common Cases</h2>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li><code>@SuppressWarnings("unchecked")</code> - Raw type casting</li>
+            <li><code>@SuppressWarnings("deprecation")</code> - Using deprecated API</li>
+            <li><code>@SuppressWarnings("all")</code> - Suppress all warnings</li>
+            <li>Apply to method or class level</li>
+            <li>Use sparingly, fix root cause when possible</li>
+        </ul>
+    </section>
+
+    <!-- Slide 9: @FunctionalInterface Annotation -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 1.8rem;">Code Demo: @FunctionalInterface</h2>
+        <pre><code>@FunctionalInterface
+public interface Calculator {
+  int calculate(int a, int b);
+}
+
+@FunctionalInterface
+public interface StringProcessor {
+  String process(String input);
+}
+
+// Usage with Lambda
+Calculator add = (a, b) -> a + b;
+Calculator multiply = (a, b) -> a * b;
+
+StringProcessor upper = 
+  str -> str.toUpperCase();
+
+System.out.println(add.calculate(5, 3));</code></pre>
+    </section>
+
+    <!-- Slide 10: Custom Annotations Fundamentals -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Creating Custom Annotations</h2>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li>Use <code>@interface</code> keyword to declare</li>
+            <li>Define annotation elements (methods)</li>
+            <li>Specify default values for optional elements</li>
+            <li>Apply meta-annotations for behavior</li>
+            <li>Use reflection to process at runtime</li>
+        </ul>
+    </section>
+
+    <!-- Slide 11: Custom Annotation Syntax -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 1.9rem;">Code Demo: Custom Annotation</h2>
+        <pre><code>@Target({ElementType.METHOD, 
+  ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface ValidateUser {
+  String role() default "USER";
+  int maxRetries() default 3;
+  long timeout() default 5000L;
+}
+
+@ValidateUser(role = "ADMIN", 
+  maxRetries = 5)
+public void deleteUser(int id) {
+  System.out.println("Admin operation");
+}
+
+@ValidateUser
+public void viewProfile(int id) {
+  System.out.println("User operation");
+}</code></pre>
+    </section>
+
+    <!-- Slide 12: Meta-annotations: @Target -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Meta-annotation: @Target</h2>
+        <p class="text-lg mb-4" style="color: #0f172a;">Specifies where annotation can be applied:</p>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li><code>ElementType.TYPE</code> - Classes, interfaces, enums</li>
+            <li><code>ElementType.METHOD</code> - Method declarations</li>
+            <li><code>ElementType.FIELD</code> - Field variables</li>
+            <li><code>ElementType.PARAMETER</code> - Method parameters</li>
+            <li><code>ElementType.CONSTRUCTOR</code> - Constructor declarations</li>
+        </ul>
+    </section>
+
+    <!-- Slide 13: @Target Code Examples -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 1.9rem;">Code Demo: @Target Variations</h2>
+        <pre><code>// Type-level annotation
+@Target(ElementType.TYPE)
+public @interface Service { }
+
+// Method-level annotation
+@Target(ElementType.METHOD)
+public @interface CacheResult { }
+
+// Field-level annotation
+@Target(ElementType.FIELD)
+public @interface Inject { }
+
+// Multiple targets
+@Target({ElementType.METHOD, 
+  ElementType.TYPE})
+public @interface Secure { }
+
+@Service
+class UserService {
+  @Inject
+  private UserRepository repo;
+  
+  @CacheResult
+  public User findById(int id) {
+    return repo.get(id);
+  }
+}</code></pre>
+    </section>
+
+    <!-- Slide 14: Annotation Reflection API -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Reflection: Processing Annotations</h2>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li><code>isAnnotationPresent()</code> - Check if annotation exists</li>
+            <li><code>getAnnotation()</code> - Get single annotation instance</li>
+            <li><code>getAnnotations()</code> - Get all annotations</li>
+            <li><code>getDeclaredAnnotations()</code> - Get direct annotations only</li>
+            <li>Works on classes, methods, fields, constructors, parameters</li>
+        </ul>
+    </section>
+
+    <!-- Slide 15: Field-Level Annotations -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 1.9rem;">Code Demo: Field Annotations</h2>
+        <pre><code>public @interface Validate {
+  String pattern() default "";
+  int minLength() default 0;
+  int maxLength() default 255;
+  boolean required() default true;
+}
+
+public class User {
+  @Validate(minLength = 3, 
+    maxLength = 50)
+  private String username;
+  
+  @Validate(pattern = "^[A-Za-z0-9+_.-]+@(.+)$")
+  private String email;
+  
+  @Validate(minLength = 8)
+  private String password;
+  
+  private String address; 
+    // No validation
+}
+
+// Process fields
+for (Field f : User.class
+    .getDeclaredFields()) {
+  if (f.isAnnotationPresent(Validate.class)) {
+    Validate v = f.getAnnotation(
+      Validate.class);
+  }
+}</code></pre>
+    </section>
+
+    <!-- Slide 16: Annotation Processing Tool (APT) -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Annotation Processing (Compile-Time)</h2>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li>Process annotations during compilation</li>
+            <li>Generate new source/class files automatically</li>
+            <li>Extend <code>AbstractProcessor</code> class</li>
+            <li>Use in build pipeline with Maven/Gradle</li>
+            <li>Examples: Lombok, MapStruct, Dagger</li>
+        </ul>
+    </section>
+
+    <!-- Slide 17: Custom Processor Example -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 1.8rem;">Code Demo: Annotation Processor</h2>
+        <pre><code>@SupportedAnnotationTypes(
+  {"com.example.GenerateBuilder"})
+@SupportedSourceVersion(
+  SourceVersion.RELEASE_21)
+public class BuilderProcessor 
+  extends AbstractProcessor {
+  
+  @Override
+  public boolean process(
+    Set<? extends TypeElement> 
+      annotations,
+    RoundEnvironment roundEnv) {
+    
+    for (Element elem : roundEnv
+        .getElementsAnnotatedWith(
+          GenerateBuilder.class)) {
+      
+      // Generate builder code
+      generateBuilder((TypeElement) elem);
+    }
+    return true;
+  }
+}</code></pre>
+    </section>
+
+    <!-- Slide 18: Real-World Annotation Frameworks -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Popular Annotation Frameworks</h2>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li><span style="color: #0284c7; font-weight: bold;">Spring</span> - @Service, @Repository, @Autowired</li>
+            <li><span style="color: #0284c7; font-weight: bold;">Lombok</span> - @Data, @Getter, @Setter, @Builder</li>
+            <li><span style="color: #0284c7; font-weight: bold;">JUnit</span> - @Test, @BeforeEach, @DisplayName</li>
+            <li><span style="color: #0284c7; font-weight: bold;">Jackson</span> - @JsonProperty, @JsonIgnore</li>
+            <li><span style="color: #0284c7; font-weight: bold;">Dagger</span> - @Inject, @Component</li>
+        </ul>
+    </section>
+
+    <!-- Slide 19: Custom Validation Annotation -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-4" style="color: #0284c7; font-size: 1.8rem;">Code Demo: Validation Annotation</h2>
+        <pre><code>@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Email {
+  String message() 
+    default "Invalid email";
+}
+
+public class User {
+  private String name;
+  
+  @Email
+  private String email;
+}
+
+public class Validator {
+  public static <T> void validate(T obj) 
+    throws ValidationException {
+    Class<?> clazz = obj.getClass();
+    
+    for (Field field : 
+      clazz.getDeclaredFields()) {
+      if (field.isAnnotationPresent(
+        Email.class)) {
+        field.setAccessible(true);
+        String value = 
+          (String) field.get(obj);
+        
+        if (!isValidEmail(value)) {
+          throw new ValidationException(
+            "Invalid email");
+        }
+      }
+    }
+  }
+}</code></pre>
+    </section>
+
+    <!-- Slide 20: Annotation Best Practices -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">Best Practices for Annotations</h2>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li>Always specify @Target and @Retention</li>
+            <li>Use @Documented for public-facing annotations</li>
+            <li>Provide meaningful default values</li>
+            <li>Document annotation purpose and usage</li>
+            <li>Avoid overuse - not every feature needs one</li>
+        </ul>
+    </section>
+
+    <!-- Slide 21: When NOT to Use Annotations -->
+    <section class="slide p-16 col" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="mb-6" style="color: #0284c7;">When to Avoid Annotations</h2>
+        <ul class="text-lg" style="color: #0f172a;">
+            <li>Frequently changing requirements</li>
+            <li>Business logic that should be in code</li>
+            <li>When explicit code is clearer</li>
+            <li>Simple one-off markers (use comments)</li>
+            <li>Complex configuration (use XML or JSON)</li>
+        </ul>
+    </section>
+
+    <!-- Slide 22: Training Complete -->
+    <section class="slide p-16 col center" style="background-color: #0284c7; color: #ffffff;">
+        <h1 class="text-5xl mb-6" style="color: #ffffff;">Java Annotations Mastery Complete!</h1>
+        <p class="text-xl" style="color: #ffffff;">You now understand annotations deeply</p>
+        <p class="text-lg mt-8" style="color: #ffffff;">Next: Apply to real-world frameworks and build custom processors</p>
+    </section>
+
+    <!-- Slide 25: Thank You -->
+    <section class="slide p-16 col center" style="background-color: #ffffff; color: #0f172a;">
+        <h2 class="text-5xl mb-6" style="color: #0284c7;">Thank You!</h2>
+        <p class="text-xl mb-4" style="color: #0f172a;">Questions & Discussion</p>
+        <p class="text-lg" style="color: #475569;">Code examples • Best practices • Framework integration</p>
+        <p class="text-sm mt-8" style="color: #64748b;">Contact for advanced annotation patterns and techniques</p>
+    </section>
+
+</body>
+</html>
