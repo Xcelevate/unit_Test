@@ -1,0 +1,271 @@
+<html><head><meta charset="UTF-8"><title>Advanced JUnit & Mockito Test Paper - Q17–Q24 (Questions & Answers)</title></head><body><h1>Advanced JUnit & Mockito - Argument Matchers & Argument Captors</h1><p>Questions and sample answers for Q17–Q24.</p><hr/><h2>Q17 – Mixed argument matchers and exact values</h2><h3>Question</h3><p>You have:</p><pre><code>public interface NotificationService {
+    void send(String channel, String to, String message);
+}
+</code></pre><p>Requirements:</p><ul><li>When a user signs up, the system calls:<ul><li><code>send("EMAIL", userEmail, "WELCOME")</code></li><li><code>send("SMS", userPhone, any welcome message)</code> where the message starts with <code>"Hi "</code>.</li></ul></li><li>Write a test method that:<ul><li>Mocks <code>NotificationService</code>.</li><li>Triggers the sign-up flow (assume <code>UserSignupService</code> that depends on <code>NotificationService</code>).</li><li>Uses argument matchers to verify the EMAIL and SMS behaviors as described.</li></ul></li></ul><h3>Answer (sample)</h3><pre><code>class UserSignupServiceTest {
+
+    @Mock
+    private NotificationService notificationService;
+
+    @InjectMocks
+    private UserSignupService signupService;
+
+    @Test
+    void shouldSendEmailAndSmsOnSignup() {
+        String email = "user@example.com";
+        String phone = "+911234567890";
+
+        signupService.signup(email, phone);
+
+        // Exact match for EMAIL notification
+        verify(notificationService).send("EMAIL", eq(email), eq("WELCOME"));
+
+        // SMS: any phone, message starting with "Hi "
+        verify(notificationService).send(
+                eq("SMS"),
+                eq(phone),
+                argThat(msg -> msg != null && msg.startsWith("Hi "))
+        );
+    }
+}
+</code></pre><hr/><h2>Q18 – Custom matcher for domain constraints</h2><h3>Question</h3><pre><code>public record TransferRequest(String fromAccount, String toAccount, long amount) {}
+
+public interface TransferGateway {
+    void transfer(TransferRequest request);
+}
+</code></pre><p>Business rules:</p><ul><li><code>amount</code> must be &gt; 0 and ≤ 1_000_000.</li><li><code>fromAccount</code> and <code>toAccount</code> must be different.</li></ul><p>Write a test that:</p><ul><li>Mocks <code>TransferGateway</code>.</li><li>Calls the code under test that creates a <code>TransferRequest</code> and passes it to <code>transfer(...)</code>.</li><li>Uses <code>argThat(...)</code> to verify the <code>TransferRequest</code> satisfies all constraints.</li></ul><h3>Answer (sample)</h3><pre><code>class TransferServiceTest {
+
+    @Mock
+    private TransferGateway gateway;
+
+    @InjectMocks
+    private TransferService service;
+
+    @Test
+    void shouldPassValidTransferRequestToGateway() {
+        service.transfer("ACC1", "ACC2", 500_000L);
+
+        verify(gateway).transfer(argThat(req ->
+                req.amount() > 0 &&
+                req.amount() <= 1_000_000 &&
+                !req.fromAccount().equals(req.toAccount())
+        ));
+    }
+}
+</code></pre><hr/><h2>Q19 – Combining any() with eq() correctly</h2><h3>Question</h3><pre><code>public interface AuditLogger {
+    void log(String action, String userId, Map&lt;String, Object&gt; metadata);
+}
+</code></pre><p>The code under test calls:</p><pre><code>auditLogger.log("LOGIN", "alice", Map.of("success", true));
+</code></pre><p>Write a test that:</p><ul><li>Uses a Mockito mock of <code>AuditLogger</code>.</li><li>Verifies that <code>log(...)</code> is called once with:<ul><li><code>action = "LOGIN"</code> (exact match),</li><li>any non-null <code>userId</code>,</li><li>a <code>metadata</code> map that contains key <code>"success"</code> with value <code>true</code>.</li></ul></li><li>Demonstrates correct matcher usage (no raw/matcher mixing mistakes).</li></ul><h3>Answer (sample)</h3><pre><code>class AuditServiceTest {
+
+    @Mock
+    private AuditLogger auditLogger;
+
+    @InjectMocks
+    private LoginService loginService;
+
+    @Test
+    void shouldLogSuccessfulLogin() {
+        loginService.login("alice", "password");
+
+        verify(auditLogger).log(
+                eq("LOGIN"),
+                anyString(),
+                argThat(meta -> meta != null &&
+                        Boolean.TRUE.equals(meta.get("success")))
+        );
+    }
+}
+</code></pre><hr/><h2>Q20 – Capturing a saved entity</h2><h3>Question</h3><pre><code>public class User {
+    private String name;
+    private String email;
+    // getters/setters omitted
+}
+
+public interface UserRepository {
+    void save(User user);
+}
+
+public class UserRegistrationService {
+    private final UserRepository repo;
+
+    public void register(String name, String email) {
+        User user = new User();
+        user.setName(name.trim());
+        user.setEmail(email.toLowerCase());
+        repo.save(user);
+    }
+}
+</code></pre><p>Write a test using <code>ArgumentCaptor&lt;User&gt;</code> that:</p><ul><li>Calls <code>register(" John ", "JOHN@EXAMPLE.COM")</code>.</li><li>Captures the <code>User</code> passed into <code>repo.save(...)</code>.</li><li>Asserts that <code>name</code> is <code>"John"</code> and <code>email</code> is <code>"john@example.com"</code>.</li></ul><h3>Answer (sample)</h3><pre><code>class UserRegistrationServiceTest {
+
+    @Mock
+    private UserRepository repo;
+
+    @InjectMocks
+    private UserRegistrationService service;
+
+    @Test
+    void shouldTrimNameAndLowercaseEmailBeforeSaving() {
+        service.register(" John ", "JOHN@EXAMPLE.COM");
+
+        ArgumentCaptor&lt;User&gt; captor = ArgumentCaptor.forClass(User.class);
+        verify(repo).save(captor.capture());
+
+        User saved = captor.getValue();
+        assertEquals("John", saved.getName());
+        assertEquals("john@example.com", saved.getEmail());
+    }
+}
+</code></pre><hr/><h2>Q21 – Capturing multiple calls</h2><h3>Question</h3><pre><code>public interface EmailService {
+    void send(String to, String subject);
+}
+
+public void notifyBatch(List&lt;String&gt; emails) {
+    for (String email : emails) {
+        emailService.send(email, "WELCOME");
+    }
+}
+</code></pre><p>Write a test that:</p><ul><li>Passes a list of three email IDs into <code>notifyBatch(...)</code>.</li><li>Uses <code>ArgumentCaptor&lt;String&gt;</code> to capture all <code>to</code> arguments.</li><li>Asserts that <code>send</code> is called 3 times and the captured list equals the input list in order.</li></ul><h3>Answer (sample)</h3><pre><code>class BatchNotifierTest {
+
+    @Mock
+    private EmailService emailService;
+
+    @InjectMocks
+    private BatchNotifier notifier;
+
+    @Test
+    void shouldSendWelcomeEmailToEachRecipient() {
+        List&lt;String&gt; emails = List.of(
+                "a@example.com",
+                "b@example.com",
+                "c@example.com"
+        );
+
+        notifier.notifyBatch(emails);
+
+        ArgumentCaptor&lt;String&gt; toCaptor = ArgumentCaptor.forClass(String.class);
+        verify(emailService, times(3)).send(toCaptor.capture(), eq("WELCOME"));
+
+        List&lt;String&gt; captured = toCaptor.getAllValues();
+        assertEquals(emails, captured);
+    }
+}
+</code></pre><hr/><h2>Q22 – Captor plus matchers</h2><h3>Question</h3><pre><code>public interface PricingService {
+    BigDecimal calculatePrice(String sku, int quantity);
+}
+
+public interface OrderRepository {
+    void save(Order order);
+}
+
+public class OrderService {
+    private final PricingService pricing;
+    private final OrderRepository repo;
+
+    public void placeOrder(String sku, int qty) {
+        BigDecimal price = pricing.calculatePrice(sku, qty);
+        Order order = new Order(sku, qty, price);
+        repo.save(order);
+    }
+}
+</code></pre><p>Write a test that:</p><ul><li>Stubs <code>pricing.calculatePrice("ABC123", 5)</code> to return <code>99.95</code>.</li><li>Calls <code>placeOrder("ABC123", 5)</code>.</li><li>Verifies <code>calculatePrice</code> is called with exact SKU/qty.</li><li>Uses <code>ArgumentCaptor&lt;Order&gt;</code> to assert SKU, qty, and price on the saved order.</li></ul><h3>Answer (sample)</h3><pre><code>class OrderServiceTest {
+
+    @Mock
+    private PricingService pricing;
+
+    @Mock
+    private OrderRepository repo;
+
+    @InjectMocks
+    private OrderService service;
+
+    @Test
+    void shouldCreateOrderWithCalculatedPrice() {
+        when(pricing.calculatePrice("ABC123", 5))
+                .thenReturn(new BigDecimal("99.95"));
+
+        service.placeOrder("ABC123", 5);
+
+        // verify calculatePrice called with exact args
+        verify(pricing).calculatePrice(eq("ABC123"), eq(5));
+
+        // capture the saved order
+        ArgumentCaptor&lt;Order&gt; orderCaptor = ArgumentCaptor.forClass(Order.class);
+        verify(repo).save(orderCaptor.capture());
+
+        Order saved = orderCaptor.getValue();
+        assertEquals("ABC123", saved.getSku());
+        assertEquals(5, saved.getQuantity());
+        assertEquals(new BigDecimal("99.95"), saved.getTotalPrice());
+    }
+}
+</code></pre><hr/><h2>Q23 – Capturing domain events</h2><h3>Question</h3><pre><code>public interface DomainEventPublisher {
+    void publish(Object event);
+}
+
+public record UserCreatedEvent(String userId) {}
+public record WelcomeEmailScheduledEvent(String userId) {}
+
+public void onboardUser(String userId) {
+    publisher.publish(new UserCreatedEvent(userId));
+    publisher.publish(new WelcomeEmailScheduledEvent(userId));
+}
+</code></pre><p>Write a test that:</p><ul><li>Uses <code>ArgumentCaptor&lt;Object&gt;</code> to capture both events.</li><li>Asserts that exactly 2 events were published.</li><li>Asserts that one is <code>UserCreatedEvent</code> and one is <code>WelcomeEmailScheduledEvent</code> for the same <code>userId</code>.</li></ul><h3>Answer (sample)</h3><pre><code>class OnboardingServiceTest {
+
+    @Mock
+    private DomainEventPublisher publisher;
+
+    @InjectMocks
+    private OnboardingService service;
+
+    @Test
+    void shouldPublishUserCreatedAndWelcomeEvents() {
+        String userId = "user-123";
+
+        service.onboardUser(userId);
+
+        ArgumentCaptor&lt;Object&gt; eventCaptor = ArgumentCaptor.forClass(Object.class);
+        verify(publisher, times(2)).publish(eventCaptor.capture());
+
+        List&lt;Object&gt; events = eventCaptor.getAllValues();
+        assertEquals(2, events.size());
+
+        boolean hasUserCreated = events.stream()
+                .anyMatch(e -> e instanceof UserCreatedEvent u &&
+                        u.userId().equals(userId));
+
+        boolean hasWelcomeScheduled = events.stream()
+                .anyMatch(e -> e instanceof WelcomeEmailScheduledEvent w &&
+                        w.userId().equals(userId));
+
+        assertTrue(hasUserCreated);
+        assertTrue(hasWelcomeScheduled);
+    }
+}
+</code></pre><hr/><h2>Q24 – Captor to detect subtle bug</h2><h3>Question</h3><pre><code>public interface InventoryService {
+    void reserve(String sku, int quantity);
+}
+
+public void orderItem(String sku, int quantity) {
+    inventory.reserve(sku, quantity - 1); // BUG: reserves one less item
+}
+</code></pre><p>Write a test that:</p><ul><li>Calls <code>orderItem("ABC123", 10)</code>.</li><li>Uses <code>ArgumentCaptor&lt;Integer&gt;</code> to capture the reserved quantity.</li><li>Fails if the captured quantity is not 10.</li></ul><h3>Answer (sample)</h3><pre><code>class OrderItemServiceTest {
+
+    @Mock
+    private InventoryService inventory;
+
+    @InjectMocks
+    private OrderItemService service;
+
+    @Test
+    void shouldReserveExactlyRequestedQuantity() {
+        service.orderItem("ABC123", 10);
+
+        ArgumentCaptor&lt;Integer&gt; qtyCaptor = ArgumentCaptor.forClass(Integer.class);
+        verify(inventory).reserve(eq("ABC123"), qtyCaptor.capture());
+
+        Integer reservedQty = qtyCaptor.getValue();
+        assertEquals(10, reservedQty,
+                "Inventory should reserve exactly requested quantity");
+    }
+}
+</code></pre></body></html>
