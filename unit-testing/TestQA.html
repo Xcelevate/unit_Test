@@ -11,11 +11,14 @@
 
     @Test
     void shouldSendEmailAndSmsOnSignup() {
+        //Arrange
         String email = "user@example.com";
         String phone = "+911234567890";
 
+        //Act
         signupService.signup(email, phone);
 
+        //Assert
         // Exact match for EMAIL notification
         verify(notificationService).send("EMAIL", eq(email), eq("WELCOME"));
 
@@ -42,8 +45,12 @@ public interface TransferGateway {
 
     @Test
     void shouldPassValidTransferRequestToGateway() {
+        //Arrange
+
+        //Act
         service.transfer("ACC1", "ACC2", 500_000L);
 
+        //Assert
         verify(gateway).transfer(argThat(req ->
                 req.amount() > 0 &&
                 req.amount() <= 1_000_000 &&
@@ -65,8 +72,13 @@ public interface TransferGateway {
 
     @Test
     void shouldLogSuccessfulLogin() {
+
+        //Arrange
+
+        //Act
         loginService.login("alice", "password");
 
+        //Assert
         verify(auditLogger).log(
                 eq("LOGIN"),
                 anyString(),
@@ -105,8 +117,12 @@ public class UserRegistrationService {
 
     @Test
     void shouldTrimNameAndLowercaseEmailBeforeSaving() {
+        //Arrange
+
+        //Act
         service.register(" John ", "JOHN@EXAMPLE.COM");
 
+        //Assert
         ArgumentCaptor&lt;User&gt; captor = ArgumentCaptor.forClass(User.class);
         verify(repo).save(captor.capture());
 
@@ -134,14 +150,18 @@ public void notifyBatch(List&lt;String&gt; emails) {
 
     @Test
     void shouldSendWelcomeEmailToEachRecipient() {
+
+        //Arrange
         List&lt;String&gt; emails = List.of(
                 "a@example.com",
                 "b@example.com",
                 "c@example.com"
         );
 
+        //Act
         notifier.notifyBatch(emails);
 
+        //Assert
         ArgumentCaptor&lt;String&gt; toCaptor = ArgumentCaptor.forClass(String.class);
         verify(emailService, times(3)).send(toCaptor.capture(), eq("WELCOME"));
 
@@ -180,11 +200,14 @@ public class OrderService {
 
     @Test
     void shouldCreateOrderWithCalculatedPrice() {
+        //Arrange
         when(pricing.calculatePrice("ABC123", 5))
                 .thenReturn(new BigDecimal("99.95"));
 
+        //Act
         service.placeOrder("ABC123", 5);
 
+        //Assert
         // verify calculatePrice called with exact args
         verify(pricing).calculatePrice(eq("ABC123"), eq(5));
 
@@ -219,10 +242,14 @@ public void onboardUser(String userId) {
 
     @Test
     void shouldPublishUserCreatedAndWelcomeEvents() {
+
+        //Arrange
         String userId = "user-123";
 
+        //Act
         service.onboardUser(userId);
 
+        //Assert
         ArgumentCaptor&lt;Object&gt; eventCaptor = ArgumentCaptor.forClass(Object.class);
         verify(publisher, times(2)).publish(eventCaptor.capture());
 
@@ -258,8 +285,10 @@ public void orderItem(String sku, int quantity) {
 
     @Test
     void shouldReserveExactlyRequestedQuantity() {
+        //Act
         service.orderItem("ABC123", 10);
 
+        //Assert
         ArgumentCaptor&lt;Integer&gt; qtyCaptor = ArgumentCaptor.forClass(Integer.class);
         verify(inventory).reserve(eq("ABC123"), qtyCaptor.capture());
 
